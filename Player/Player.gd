@@ -1,24 +1,26 @@
 extends KinematicBody2D
 
 var motion = Vector2.ZERO
-var MAX_SPEED = 230
+
+const MAX_SPEED = 150
+const JUMP = 350
+const GRAVITY = 5
 
 
 func _physics_process(_delta):
 	
-	get_input_axis()
+	motion.y += GRAVITY
 	
-	if motion.x < 0:
-		max_speed(MAX_SPEED * _delta)
-		
-	elif motion.x > 0:
-		max_speed(MAX_SPEED * _delta)
+	if Input.is_action_pressed("ui_right"):
+		motion.x = MAX_SPEED
 	
-	move_and_collide(motion)
-
-func get_input_axis():
-	motion.x = int(Input.is_action_pressed("ui_right")) - int(Input.is_action_pressed("ui_left"))
+	elif Input.is_action_pressed("ui_left"):
+		motion.x = -MAX_SPEED
 	
-func max_speed(speed):
-	motion.x *= speed  
-
+	elif Input.is_action_just_released("ui_right") or Input.is_action_just_released("ui_left"):
+		motion.x = 0
+	
+	if Input.is_action_just_pressed("ui_jump"):
+		motion.y -= JUMP
+	
+	motion = move_and_slide(motion)
